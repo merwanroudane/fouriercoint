@@ -1,0 +1,330 @@
+# Fourier Cointegration Package - Complete Guide for Windows
+
+## Package Information
+
+**Package Name:** fouriercoint  
+**Version:** 1.0.0  
+**Author:** Dr. Merwan Roudane  
+**Email:** merwanroudane920@gmail.com  
+**GitHub:** https://github.com/merwanroudane/fouriercoint  
+**License:** MIT
+
+## Reference
+
+**Tsong, C.C., Lee, C.F., Tsai, L.J., & Hu, T.C. (2016).**  
+*The Fourier approximation and testing for the null of cointegration.*  
+**Empirical Economics**, 51(3), 1085-1113.  
+DOI: 10.1007/s00181-015-1028-6
+
+## Package Status
+
+✅ **Core Implementation Complete**
+- Fourier cointegration test (OLS and DOLS)
+- Critical values from Table 1 of the paper
+- Automatic frequency selection
+- F-test for Fourier significance
+- Long-run variance estimation (Bartlett and QS kernels)
+- Full documentation and examples
+
+⚠ **Known Issues**
+- Some numerical sensitivity with very strong cointegration and small noise
+- DOLS with automatic bandwidth selection may need tuning for small samples
+- Recommended to use with T >= 100 observations
+
+## Installation Instructions (Windows)
+
+### Method 1: Install from Local Directory
+
+```cmd
+# Navigate to package directory
+cd C:\path\to\fouriercoint
+
+# Install in development mode
+pip install -e .
+
+# OR install normally
+pip install .
+```
+
+### Method 2: Install from GitHub
+
+Once you've uploaded to GitHub:
+
+```cmd
+pip install git+https://github.com/merwanroudane/fouriercoint.git
+```
+
+### Method 3: Build and Install Wheel
+
+```cmd
+# Install build tools
+pip install build twine
+
+# Build the package
+python -m build
+
+# Install the wheel
+pip install dist/fouriercoint-1.0.0-py3-none-any.whl
+```
+
+## Quick Start
+
+```python
+import numpy as np
+from fouriercoint import fourier_cointegration_test
+
+# Generate sample data
+np.random.seed(42)
+T = 200
+
+# I(1) process
+x = np.cumsum(np.random.randn(T, 1))
+
+# Cointegrated with structural break
+t = np.arange(T)
+break_point = T // 2
+level_shift = np.where(t < break_point, 0, 3)
+y = 2 + 0.5 * x + level_shift.reshape(-1, 1) + np.random.randn(T, 1)
+
+# Run test
+results = fourier_cointegration_test(
+    y=y,
+    x=x,
+    m=0,  # Level shifts only
+    kmax=3,
+    significance_level=0.05
+)
+
+print(f"Test Statistic: {results['test_statistic']:.4f}")
+print(f"Cointegration: {not results['reject_null']}")
+```
+
+## Publishing to PyPI
+
+### Step 1: Prepare Package
+
+```cmd
+# Make sure all files are correct
+python setup.py check
+
+# Run tests
+python fouriercoint/test_package.py
+```
+
+### Step 2: Build Distribution
+
+```cmd
+# Install required tools
+pip install build twine
+
+# Clean old builds
+rmdir /s /q build dist fouriercoint.egg-info
+
+# Build
+python -m build
+```
+
+This creates:
+- `dist/fouriercoint-1.0.0-py3-none-any.whl`
+- `dist/fouriercoint-1.0.0.tar.gz`
+
+### Step 3: Test Upload to TestPyPI (Optional but Recommended)
+
+```cmd
+# Upload to TestPyPI
+python -m twine upload --repository testpypi dist/*
+
+# Test install
+pip install --index-url https://test.pypi.org/simple/ fouriercoint
+```
+
+### Step 4: Upload to PyPI
+
+```cmd
+# Upload to real PyPI
+python -m twine upload dist/*
+```
+
+You'll need:
+- PyPI account: https://pypi.org/account/register/
+- API token: https://pypi.org/manage/account/token/
+
+### Step 5: Install from PyPI
+
+Once published:
+
+```cmd
+pip install fouriercoint
+```
+
+## GitHub Repository Setup
+
+### Initial Setup
+
+```cmd
+# Initialize git repository
+git init
+git add .
+git commit -m "Initial commit: Fourier Cointegration Test package"
+
+# Create repository on GitHub (https://github.com/new)
+# Then link and push:
+git remote add origin https://github.com/merwanroudane/fouriercoint.git
+git branch -M main
+git push -u origin main
+```
+
+### Create Release
+
+1. Go to https://github.com/merwanroudane/fouriercoint/releases
+2. Click "Create a new release"
+3. Tag: v1.0.0
+4. Title: "Fourier Cointegration Test v1.0.0"
+5. Description:
+   ```
+   Initial release implementing Tsong et al. (2016) Fourier cointegration test.
+   
+   Features:
+   - Cointegration testing with structural breaks
+   - Fourier approximation for unknown break forms
+   - OLS and DOLS estimation
+   - Automatic frequency selection
+   - Complete documentation and examples
+   ```
+
+## Package Structure
+
+```
+fouriercoint/
+├── fouriercoint/
+│   ├── __init__.py          # Package initialization
+│   ├── core.py              # Main test functions
+│   ├── critical_values.py   # Critical values from Table 1
+│   ├── utils.py             # Helper functions
+│   ├── examples.py          # Usage examples
+│   └── test_package.py      # Verification tests
+├── setup.py                 # Installation configuration
+├── README.md                # Documentation
+├── LICENSE                  # MIT License
+├── requirements.txt         # Dependencies
+└── WINDOWS_GUIDE.txt        # This file
+```
+
+## Dependencies
+
+- Python >= 3.7
+- NumPy >= 1.19.0
+- SciPy >= 1.5.0
+
+## Usage Examples
+
+### Basic Test
+
+```python
+from fouriercoint import fourier_cointegration_test
+
+# Your I(1) data
+results = fourier_cointegration_test(y, x, m=1)
+```
+
+### Get Critical Values
+
+```python
+from fouriercoint import get_critical_values
+
+cv = get_critical_values(m=1, k=1, p=1)
+print(f"5% critical value: {cv[0.05]:.4f}")
+```
+
+### OLS vs DOLS
+
+```python
+from fouriercoint import (
+    fourier_cointegration_ols,
+    fourier_cointegration_dols
+)
+
+# OLS (for exogenous regressors)
+ols_result = fourier_cointegration_ols(y, x, m=1, k=1)
+
+# DOLS (for potentially endogenous regressors)
+dols_result = fourier_cointegration_dols(y, x, m=1, k=1, q=3)
+```
+
+### Multivariate
+
+```python
+# Multiple regressors
+x_multi = np.cumsum(np.random.randn(T, 3), axis=0)
+results = fourier_cointegration_test(y, x_multi, m=1)
+```
+
+## Testing
+
+Run the test suite:
+
+```cmd
+python fouriercoint/test_package.py
+```
+
+Run examples:
+
+```cmd
+python fouriercoint/examples.py
+```
+
+## Troubleshooting
+
+### Issue: LRV too small
+**Solution:** Use larger bandwidth or add more noise to data
+
+### Issue: Test statistic too high
+**Solution:** Check data is actually cointegrated, increase sample size
+
+### Issue: Import errors
+**Solution:** Reinstall package: `pip uninstall fouriercoint && pip install -e .`
+
+## Comparison with R Implementation
+
+The Python implementation follows the R methodology but with improvements:
+- Automatic array handling
+- More robust numerical safeguards
+- Cleaner API design
+- Better documentation
+
+## Citation
+
+```bibtex
+@software{roudane2024fouriercoint,
+  author = {Roudane, Merwan},
+  title = {fouriercoint: Fourier Cointegration Test in Python},
+  year = {2024},
+  url = {https://github.com/merwanroudane/fouriercoint},
+  version = {1.0.0}
+}
+
+@article{tsong2016fourier,
+  title={The Fourier approximation and testing for the null of cointegration},
+  author={Tsong, Ching-Chuan and Lee, Cheng-Feng and Tsai, Li-Ju and Hu, Te-Chung},
+  journal={Empirical Economics},
+  volume={51},
+  number={3},
+  pages={1085--1113},
+  year={2016},
+  publisher={Springer}
+}
+```
+
+## Support
+
+- GitHub Issues: https://github.com/merwanroudane/fouriercoint/issues
+- Email: merwanroudane920@gmail.com
+
+## License
+
+MIT License - see LICENSE file for details
+
+---
+
+**Package created November 2024**  
+**Dr. Merwan Roudane**
