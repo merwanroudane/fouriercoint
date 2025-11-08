@@ -3,7 +3,7 @@
 ## Package Information
 
 **Package Name:** fouriercoint  
-**Version:** 1.0.0  
+**Version:** 0.1.2  
 **Author:** Dr. Merwan Roudane  
 **Email:** merwanroudane920@gmail.com  
 **GitHub:** https://github.com/merwanroudane/fouriercoint  
