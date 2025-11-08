@@ -365,10 +365,7 @@ GitHub: [@merwanroudane](https://github.com/merwanroudane)
 - Inspired by R implementation and econometric theory
 - Built for the Python econometrics community
 
-## ⚠️ Disclaimer
-
-This package is provided for research and educational purposes. Users should verify results for critical applications.
 
 ---
 
-**Made with ❤️ for the econometrics community**
+**Made with by Dr Roudane❤️ for the econometrics community**
